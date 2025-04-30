@@ -1,4 +1,5 @@
 import csv
+import bcrypt
 
 is_signedin = False
 
@@ -53,10 +54,14 @@ def create_account_username():
     # Jump to password creation
 
 def doesusernamealreadyexist():
-    with open ("plain_text.txt", "a") as file:
-        if username == row[0]:
-            print("Username is already taken, please enter another.")
-            notsignedin()
+    with open ("plain_text.txt", "r") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if row["username"] == username:
+                print("Username is already taken, please enter another.")
+                return
+                notsignedin()
+                
         else:
             file.write(f"{username},")
         create_account_password()
@@ -75,7 +80,13 @@ def create_account_password():
     print("Password created.")
     notsignedin()
 
-    #Salt & Hash password
+
+#Salt & Hash password
+
+def saltnhash():
+    salt = b"test"
+
+    hashed_password = bcrypt.hashpw(password.encode(),salt=salt)
 
 
 
