@@ -86,7 +86,12 @@ def create_account_password():
 def saltnhash():
     salt = b"test"
 
+#Hashing the password
     hashed_password = bcrypt.hashpw(password.encode(),salt=salt)
+
+#Verfying password
+    if bcrypt.checkpw(input_password.encode(), hashed_password):
+        print("Login successful! :D")
 
 
 
