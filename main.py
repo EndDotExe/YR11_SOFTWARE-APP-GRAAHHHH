@@ -57,7 +57,7 @@ def doesusernamealreadyexist():
     with open ("plain_text.txt", "r") as file:
         reader = csv.DictReader(file)
         for row in reader:
-            if row["username"] == username:
+            if row["username"] == existingusername:
                 print("Username is already taken, please enter another.")
                 return
                 notsignedin()
@@ -78,20 +78,19 @@ def create_account_password():
     with open ("plain_text.txt", "a") as file:
         file.write(f"{password}\n")
     print("Password created.")
+#    saltnhash()
     notsignedin()
 
 
 #Salt & Hash password
-
-def saltnhash():
-    salt = b"test"
-
+#def saltnhash():
+#    salt = b"k3yb0ardm4$h:]"
 #Hashing the password
-    hashed_password = bcrypt.hashpw(password.encode(),salt=salt)
+#    hashed_password = bcrypt.hashpw(password.encode(),salt=salt)
 
 #Verfying password
-    if bcrypt.checkpw(input_password.encode(), hashed_password):
-        print("Login successful! :D")
+#    if bcrypt.checkpw(input_password.encode(), hashed_password):
+#        print("Login successful! :D")
 
 
 
@@ -100,6 +99,7 @@ def login():
     global existingusername
     existingusername = input("Enter Username: ")
     loginusernamechecker()
+#    saltnhash()
 
 
     #Does Username Exist?
@@ -115,16 +115,15 @@ def login():
 def loginusernamechecker():
     usernamecheck = []
 
-    with open ("plain_text.txt") as file:
-        reader = csv.reader(file)
+    with open ("source.csv", "r") as file:
+        reader = csv.DictReader(file)
         for row in reader:
-            usernamecheck.append({"username": row[0]})
-    if existingusername != row[0]:
-        print("Username does not exist, try again.")
-        notsignedin()
-    else: 
-        print("Username accepted.")
-        loginpasswordchecker()
+            if row["username"] != existingusername:
+                print("Username does not exist, try again.")
+                notsignedin()
+            else: 
+                print("Username accepted.")
+                loginpasswordchecker()
 
     #Is Password Correct?
 #loginpasswordchecker()
@@ -140,17 +139,16 @@ def loginpasswordchecker():
     checkpassword = input("Enter Password: ")
     passwordcheck = []
 
-    with open ("plain_text.txt") as file:
-        reader = csv.reader(file)
+    with open ("source.csv", "r") as file:
+        reader = csv.DictReader(file)
         for row in reader:
-            passwordcheck.append({"password": row[1]})
-    if passwordcheck != row[1]:
-        print("Incorrect password, try again.")
-        notsignedin()
-    else:
-        print(f"Password accepted. Welcome, {existingusername}.")
-        is_signedin = True
-        signedin()
+            if row["password"] != checkpassword:
+                print("Incorrect password, try again.")
+                notsignedin()
+            else:
+                print(f"Password accepted. Welcome, {existingusername}.")
+                is_signedin = True
+                signedin()
 
 #CHANGE PASSWORD
 #change_password()
@@ -159,11 +157,24 @@ def loginpasswordchecker():
     # Return to the signed in menu
     
 def change_password():
-    newpassword = input("Enter new password: ")
-    with open("plain_text.txt", "a") as file:
+    new_password = input("Enter new password: ")
+    updated = False
+    with open("plain_text.txt", "r") as file:
+        rows = list(csv.DictReader(file))
+    with open("plaintext.txt", "w") as file:
         writer = csv.DictWriter(file, fieldnames=["username", "password"])
-        writer.writerow({"username": previoususername, "password": newpassword})
-    print("Password updated.")
+        writer.writeheader()
+        for row in rows:
+            if row["username"] == existingusername:
+                row["password"] = bcrypt.hashpw(new_password.encode, bcrypt.gensalt())
+                updated = True
+            writer.writerow(row)
+        if updated:
+            print("Password changed successfully :]")
+            signedin()
+        else:
+            print("User not found :[")
+
     signedin()
 
 
