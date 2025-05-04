@@ -8,8 +8,9 @@ def start_program():
     global is_signedin
     if is_signedin == True:
         signedin()
-    if is_signedin == False:
+    else:
         notsignedin()
+        
 
 #the main menu if the user is signed in
 def signedin():
@@ -33,6 +34,7 @@ def notsignedin():
             register()
         case "Quit"|"quit":
             print("You have quit the program.")
+            
 
 
 
@@ -146,7 +148,7 @@ def loginpasswordchecker():
                 print("Incorrect password, try again.")
                 notsignedin()
             else:
-                print(f"Password accepted. Welcome, {existingusername}.")
+                print(f"Password accepted. Welcome, {existingusername}!")
                 is_signedin = True
                 signedin()
 
